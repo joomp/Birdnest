@@ -1,0 +1,35 @@
+version: "3.8"
+
+services:
+  mongo:
+    image: mongo
+    restart: always
+
+  frontend:
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./frontend
+    volumes:
+      - ./frontend:/app
+      - "/app/node_modules"
+    environment:
+      - VITE_BACKEND_URL=http://localhost:5000
+    ports:
+      - 8080:8080
+
+  backend:
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./backend
+    restart: unless-stopped
+    volumes:
+      - ./backend:/app
+      - "/app/node_modules"
+    environment:
+      - DATABASE_URI=mongodb://mongo
+      - COLLECTION=Dev
+      - URI_PARAMS=?retryWrites=true&w=majority
+    depends_on:
+      - mongo
+    ports:
+      - 5000:5000

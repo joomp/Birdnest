@@ -1,0 +1,93 @@
+openapi: 3.0.3
+info:
+  title: Birdnest API
+  description: |-
+    API Documentation for the API provided by the backend.
+  version: 1.0.0
+tags:
+  - name: Pilot
+  - name: Infraction
+paths:
+  /infractions:
+    get:
+      tags:
+        - Infraction
+      summary: Get all infractions
+      description: |-
+        Get all infractions currently stored in the database. 
+        Items are ordered by snapshotTimestamp, newest first.
+        PositionX and PositionY use the same coordinate system as the detector. Distance is in meters
+      operationId: getInfractions
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Infraction'
+  /pilot/{serialNumber}:
+    get:
+      tags:
+        - Pilot
+      summary: Get pilot information with drone serial number
+      description: |-
+        Returns the personal information of a pilot with a recent infraction.
+      operationId: getPilot
+      parameters:
+        - name: serialNumber
+          in: path
+          description: Drone serial number
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pilot'
+        '403':
+          description: The pilot does not have recent NDZ violations. Access to the pilot information forbidden.
+        '404':
+          description: Pilot not found
+components:
+  schemas:
+    Pilot:
+      type: object
+      properties:
+        pilotId:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        phoneNumber:
+          type: string
+        createdDt:
+          type: string
+        email:
+          type: string
+    Infraction:
+      type: object
+      properties:
+        serialNumber:
+          type: string
+        distance:
+          type: number
+          format: double
+        manufacturer:
+          type: string
+        model:
+          type: string
+        positionX:
+          type: number
+          format: double
+        positionY:
+          type: number
+          format: double
+        snapshotTimestamp:
+          type: string
+          format: date-time
