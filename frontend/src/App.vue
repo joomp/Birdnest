@@ -98,7 +98,7 @@ export default {
   },
   created() {
     this.updateInfractions();
-    this.poll(3000);
+    this.poll(2000);
   },
   methods: {
     string2date(str: string) {
